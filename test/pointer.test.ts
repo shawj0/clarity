@@ -211,6 +211,34 @@ test('should emit standalone primary pen pointerdown', async ({ page }) => {
     expect(pointerDown[0].data.height).toBe(5);
 });
 
+for (const pointerType of ['', 'vendor-pointer']) {
+    test(`should emit unknown pointerdown type "${pointerType}"`, async ({ page }) => {
+        await setupPage(page, 'clarity.min.js');
+
+        await page.evaluate(type => {
+            document.getElementById('child').dispatchEvent(new PointerEvent('pointerdown', {
+                bubbles: true,
+                pointerType: type,
+                pointerId: 48,
+                isPrimary: true,
+                pressure: 0.4,
+                width: 6,
+                height: 7
+            }));
+        }, pointerType);
+
+        const pointerDown = getPointerDownEvents(await decodePayloads(page));
+
+        expect(pointerDown).toHaveLength(1);
+        expect(pointerDown[0].data.id).toBe(48);
+        expect(pointerDown[0].data.isPrimary).toBe(true);
+        expect(pointerDown[0].data.type).toBe(0);
+        expect(pointerDown[0].data.pressure).toBeCloseTo(0.4, 7);
+        expect(pointerDown[0].data.width).toBe(6);
+        expect(pointerDown[0].data.height).toBe(7);
+    });
+}
+
 test('should emit standalone pointerdown in the extended build', async ({ page }) => {
     await setupPage(page, 'clarity.extended.js');
 

@@ -35,7 +35,7 @@ export function observe(root: Node): void {
 function pointer(root: Node, evt: PointerEvent): void {
     let pointerType = getPointerType(evt.pointerType);
     let [x, y]: [number, number] = coordinates(root, evt);
-    if (pointerType !== PointerType.Unknown && x !== null && y !== null) {
+    if (x !== null && y !== null) {
         handler({
             time: time(evt),
             event: Event.PointerDown,
