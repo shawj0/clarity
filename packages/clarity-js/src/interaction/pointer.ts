@@ -1,5 +1,6 @@
 import { Event } from "@clarity-types/data";
 import { PointerData, PointerState, PointerType, Setting } from "@clarity-types/interaction";
+import config from "@src/core/config";
 import { bind } from "@src/core/event";
 import { schedule } from "@src/core/task";
 import { time } from "@src/core/time";
@@ -25,7 +26,9 @@ export function observe(root: Node): void {
     bind(root, "mousemove", mouse.bind(this, Event.MouseMove, root), true);
     bind(root, "wheel", mouse.bind(this, Event.MouseWheel, root), true);
     bind(root, "dblclick", mouse.bind(this, Event.DoubleClick, root), true);
-    bind(root, "pointerdown", pointer.bind(this, root), true);
+    if (config.diagnostics) {
+        bind(root, "pointerdown", pointer.bind(this, root), true);
+    }
     bind(root, "touchstart", touch.bind(this, Event.TouchStart, root), true);
     bind(root, "touchend", touch.bind(this, Event.TouchEnd, root), true);
     bind(root, "touchmove", touch.bind(this, Event.TouchMove, root), true);

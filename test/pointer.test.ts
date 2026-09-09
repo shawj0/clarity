@@ -54,7 +54,7 @@ function getPointerEvents(decoded: Data.DecodedPayload[]): any[] {
 }
 
 test('should emit standalone mouse pointerdown', async ({ page }) => {
-    await setupPage(page, 'clarity.min.js');
+    await setupPage(page, 'clarity.min.js', { diagnostics: true });
 
     await page.evaluate(() => {
         const child = document.getElementById('child');
@@ -108,7 +108,7 @@ test('should emit standalone mouse pointerdown', async ({ page }) => {
 });
 
 test('should preserve synthetic mouse primary state', async ({ page }) => {
-    await setupPage(page, 'clarity.min.js');
+    await setupPage(page, 'clarity.min.js', { diagnostics: true });
 
     await page.evaluate(() => {
         document.getElementById('child').dispatchEvent(new PointerEvent('pointerdown', {
@@ -131,7 +131,7 @@ test('should preserve synthetic mouse primary state', async ({ page }) => {
 });
 
 test('should emit standalone primary touch pointerdown', async ({ page }) => {
-    await setupPage(page, 'clarity.min.js');
+    await setupPage(page, 'clarity.min.js', { diagnostics: true });
 
     await page.evaluate(() => {
         const child = document.getElementById('child');
@@ -163,7 +163,7 @@ test('should emit standalone primary touch pointerdown', async ({ page }) => {
 });
 
 test('should emit standalone non-primary touch pointerdown', async ({ page }) => {
-    await setupPage(page, 'clarity.min.js');
+    await setupPage(page, 'clarity.min.js', { diagnostics: true });
 
     await page.evaluate(() => {
         document.getElementById('child').dispatchEvent(new PointerEvent('pointerdown', {
@@ -186,7 +186,7 @@ test('should emit standalone non-primary touch pointerdown', async ({ page }) =>
 });
 
 test('should emit standalone primary pen pointerdown', async ({ page }) => {
-    await setupPage(page, 'clarity.min.js');
+    await setupPage(page, 'clarity.min.js', { diagnostics: true });
 
     await page.evaluate(() => {
         document.getElementById('child').dispatchEvent(new PointerEvent('pointerdown', {
@@ -213,7 +213,7 @@ test('should emit standalone primary pen pointerdown', async ({ page }) => {
 
 for (const pointerType of ['', 'vendor-pointer']) {
     test(`should emit unknown pointerdown type "${pointerType}"`, async ({ page }) => {
-        await setupPage(page, 'clarity.min.js');
+        await setupPage(page, 'clarity.min.js', { diagnostics: true });
 
         await page.evaluate(type => {
             document.getElementById('child').dispatchEvent(new PointerEvent('pointerdown', {
@@ -240,7 +240,7 @@ for (const pointerType of ['', 'vendor-pointer']) {
 }
 
 test('should emit standalone pointerdown in the extended build', async ({ page }) => {
-    await setupPage(page, 'clarity.extended.js');
+    await setupPage(page, 'clarity.extended.js', { diagnostics: true });
 
     await page.evaluate(() => {
         document.getElementById('child').dispatchEvent(new PointerEvent('pointerdown', {
@@ -264,4 +264,19 @@ test('should emit standalone pointerdown in the extended build', async ({ page }
     expect(pointerDown[0].data.pressure).toBeCloseTo(0.7, 7);
     expect(pointerDown[0].data.width).toBe(20);
     expect(pointerDown[0].data.height).toBe(30);
+});
+
+test('should not emit pointerdown when diagnostics is disabled', async ({ page }) => {
+    await setupPage(page, 'clarity.min.js');
+
+    await page.evaluate(() => {
+        document.getElementById('child').dispatchEvent(new PointerEvent('pointerdown', {
+            bubbles: true,
+            pointerType: 'mouse',
+            pointerId: 49,
+            isPrimary: true
+        }));
+    });
+
+    expect(getPointerDownEvents(await decodePayloads(page))).toHaveLength(0);
 });
