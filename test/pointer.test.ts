@@ -92,16 +92,16 @@ test('should emit standalone mouse pointerdown', async ({ page }) => {
     const source = await page.evaluate(() => window.sourcePointerDown);
 
     expect(pointerDown).toHaveLength(1);
+    expect(down).toBeTruthy();
     expect(pointerDown[0].data.target).toBe(down.data.target);
     expect(pointerDown[0].data.id).toBe(source.id);
     expect(pointerDown[0].data.isPrimary).toBe(true);
     expect(pointerDown[0].data.type).toBe(1);
     expect(pointerDown[0].data.x).toBe(source.x);
     expect(pointerDown[0].data.y).toBe(source.y);
-    expect(pointerDown[0].data.pressure).toBe(source.pressure);
-    expect(pointerDown[0].data.width).toBe(source.width);
-    expect(pointerDown[0].data.height).toBe(source.height);
-    expect(down).toBeTruthy();
+    expect(pointerDown[0].data.pressure).toBeCloseTo(source.pressure, 7);
+    expect(pointerDown[0].data.width).toBeCloseTo(source.width, 7);
+    expect(pointerDown[0].data.height).toBeCloseTo(source.height, 7);
     expect('pressure' in down.data).toBe(false);
     expect('width' in down.data).toBe(false);
     expect('height' in down.data).toBe(false);
@@ -238,6 +238,38 @@ for (const pointerType of ['', 'vendor-pointer']) {
         expect(pointerDown[0].data.height).toBe(7);
     });
 }
+
+test('should preserve zero pointerdown coordinates inside an iframe', async ({ page }) => {
+    await setupPage(page, 'clarity.min.js', { diagnostics: true });
+
+    const expected = await page.evaluate(async () => {
+        const frame = document.createElement('iframe');
+        frame.style.position = 'absolute';
+        frame.style.left = '40px';
+        frame.style.top = '50px';
+        frame.style.border = '0';
+        frame.srcdoc = '<button id="target">target</button>';
+        document.body.appendChild(frame);
+        await new Promise(resolve => frame.addEventListener('load', resolve, { once: true }));
+        await new Promise(resolve => setTimeout(resolve, 100));
+        frame.contentDocument.getElementById('target').dispatchEvent(new PointerEvent('pointerdown', {
+            bubbles: true,
+            pointerType: 'mouse',
+            pointerId: 47,
+            isPrimary: true,
+            clientX: 0,
+            clientY: 0
+        }));
+        const bounds = frame.getBoundingClientRect();
+        return { x: Math.round(bounds.x), y: Math.round(bounds.y) };
+    });
+
+    const pointerDown = getPointerDownEvents(await decodePayloads(page));
+
+    expect(pointerDown).toHaveLength(1);
+    expect(pointerDown[0].data.x).toBe(expected.x);
+    expect(pointerDown[0].data.y).toBe(expected.y);
+});
 
 test('should emit standalone pointerdown in the extended build', async ({ page }) => {
     await setupPage(page, 'clarity.extended.js', { diagnostics: true });

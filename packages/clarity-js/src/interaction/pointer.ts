@@ -88,8 +88,8 @@ function coordinates(root: Node, evt: MouseEvent | PointerEvent): [number, numbe
     // In case of iframe, we adjust (x,y) to be relative to top parent's origin
     if (frame) {
         let distance = offset(frame);
-        x = x ? x + Math.round(distance.x) : x;
-        y = y ? y + Math.round(distance.y) : y;
+        x = x !== null ? x + Math.round(distance.x) : x;
+        y = y !== null ? y + Math.round(distance.y) : y;
     }
     return [x, y];
 }
