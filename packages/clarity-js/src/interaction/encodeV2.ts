@@ -46,9 +46,8 @@ export default async function (type: Event, ts: number = null): Promise<void> {
                         tokens.push(entry.data.pressure!);
                         tokens.push(entry.data.width!);
                         tokens.push(entry.data.height!);
-                    } else {
-                        tokens.push(pTarget.region || Constant.Empty);
                     }
+                    tokens.push(pTarget.region || Constant.Empty);
                     queue(tokens);
                     if (entry.event !== Event.PointerDown && (entry.data.isPrimary === undefined || entry.data.isPrimary)) {
                         baseline.track(entry.event, entry.data.x, entry.data.y, entry.time);
