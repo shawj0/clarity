@@ -42,10 +42,10 @@ export default async function (type: Event, ts: number = null): Promise<void> {
                     tokens.push(entry.data.id !== undefined ? entry.data.id : Constant.Empty);
                     tokens.push(entry.data.isPrimary === undefined ? "true" : "" + entry.data.isPrimary);
                     if (entry.event === Event.PointerDown) {
-                        tokens.push(entry.data.type!);
-                        tokens.push(entry.data.pressure!);
-                        tokens.push(entry.data.width!);
-                        tokens.push(entry.data.height!);
+                        tokens.push(entry.data.type);
+                        tokens.push(entry.data.pressure);
+                        tokens.push(entry.data.width);
+                        tokens.push(entry.data.height);
                     }
                     tokens.push(pTarget.region || Constant.Empty);
                     queue(tokens);

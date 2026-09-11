@@ -1,5 +1,5 @@
 import { Event } from "@clarity-types/data";
-import { PointerData, PointerState, PointerType, Setting } from "@clarity-types/interaction";
+import { PointerData, PointerEventType, PointerState, PointerType, Setting } from "@clarity-types/interaction";
 import config from "@src/core/config";
 import { bind } from "@src/core/event";
 import { schedule } from "@src/core/task";
@@ -70,7 +70,7 @@ function getPointerType(pointerType: string): PointerType {
     }
 }
 
-function mouse(event: Event, root: Node, evt: MouseEvent): void {
+function mouse(event: PointerEventType, root: Node, evt: MouseEvent): void {
     let [x, y]: [number, number] = coordinates(root, evt);
 
     // Check for null values before processing this event
@@ -94,7 +94,7 @@ function coordinates(root: Node, evt: MouseEvent | PointerEvent): [number, numbe
     return [x, y];
 }
 
-function touch(event: Event, root: Node, evt: TouchEvent): void {
+function touch(event: PointerEventType, root: Node, evt: TouchEvent): void {
     let frame = iframe(root);
     let d = frame && frame.contentDocument ? frame.contentDocument.documentElement : document.documentElement;
     let touches = evt.changedTouches;

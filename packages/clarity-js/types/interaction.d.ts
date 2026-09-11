@@ -43,11 +43,30 @@ export const enum Clipboard {
 }
 
 /* Helper Interfaces */
-export interface PointerState {
+export type PointerEventType =
+    Event.MouseMove |
+    Event.MouseDown |
+    Event.MouseUp |
+    Event.MouseWheel |
+    Event.DoubleClick |
+    Event.TouchStart |
+    Event.TouchEnd |
+    Event.TouchMove |
+    Event.TouchCancel;
+
+export interface PointerEventState {
     time: number;
-    event: number;
+    event: PointerEventType;
     data: PointerData;
 }
+
+export interface PointerDownState {
+    time: number;
+    event: Event.PointerDown;
+    data: PointerDownData;
+}
+
+export type PointerState = PointerEventState | PointerDownState;
 
 export interface ClickState {
     time: number;
