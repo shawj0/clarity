@@ -114,6 +114,18 @@ test.describe("Agentic browser presence", (): void => {
         expect(await collect(page)).toEqual([Signals.CodexBrowserSidebarCommentsRoot]);
     });
 
+    test("emits only one signal across Codex roots", async ({ page }): Promise<void> => {
+        await start(page, `<script>
+            for (const id of ["codex-agent-overlay-root", "codex-browser-sidebar-comments-root"]) {
+                const marker = document.createElement("div");
+                marker.id = id;
+                document.documentElement.appendChild(marker);
+            }
+        </script>`);
+
+        expect(await collect(page)).toEqual([Signals.CodexAgentOverlayRoot]);
+    });
+
     test("captures both products when both are present", async ({ page }): Promise<void> => {
         await start(page, `<div id="claude-agent-glow-border"></div><script>
             const marker = document.createElement("div");
